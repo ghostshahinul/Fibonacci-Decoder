@@ -22,7 +22,7 @@ On Python 3.12 using the standard-library exact DP matching backend:
 * `python demo.py --samples 100 --seed 0` at `L=8`, `p=0.08`, distance weights gives 92 exact recoveries, 1 incorrect cleared result, and 7 give-ups. This is a small reproducibility example, not a benchmark or threshold estimate.
 * JSON structure, unique notebook cell IDs, cleared outputs, and agreement between notebook core definitions and the module are tested.
 
-The local environment has no scientific Python/Jupyter packages, and network restrictions prevent dependency installation. Full nbformat schema validation, NetworkX execution, plotting, and fresh-kernel notebook execution are therefore delegated to the added CI workflow; consult its actual run status before treating those as verified. The SVG example is generated without plotting dependencies from recorded decoder snapshots.
+The local environment has no scientific Python/Jupyter packages, and network restrictions prevent dependency installation. Full dependency validation was completed remotely: [GitHub Actions run 39813604923](https://github.com/ghostshahinul/Fibonacci-Decoder/actions/runs/39813604923) passed on Python 3.10 and 3.12 for implementation commit `e43b48c04ca44d878f515624fc3a9411adcc0600`. Both jobs installed the package and notebook dependencies, passed all 11 tests using NetworkX (with explicit DP fallback coverage), validated the notebook with nbformat, and executed every cell in a fresh kernel, including plotting and widget creation. Executed notebooks are attached to that run as artifacts. The SVG example is generated without plotting dependencies from recorded DP-backend snapshots.
 
 ## Remaining scientific limits
 
