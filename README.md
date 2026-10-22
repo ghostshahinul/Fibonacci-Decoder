@@ -138,8 +138,8 @@ Tests check torus geometry, single-error syndromes, even symmetry parity under a
 
 ## Attribution and next steps
 
-**Maintainer:** [Md. Shahinul Islam](https://github.com/ghostshahinul), Ph.D. researcher in Electrical and Computer Engineering at the University of Illinois Chicago, with research interests in quantum error correction and coding theory.
+**Maintainer:** [Md. Shahinul Islam](https://github.com/ghostshahinul)
 
-The underlying Fibonacci-code decoding framework is due to **Georgia M. Nixon and Benjamin J. Brown**, [arXiv:2002.11738](https://arxiv.org/abs/2002.11738). This project supplies a Python walkthrough and an inspectable implementation; the original algorithm should be credited to its authors. No new redistribution license is asserted for the described C++ port pending verification of its upstream provenance and license.
+The underlying Fibonacci-code decoding framework is due to **Georgia M. Nixon and Benjamin J. Brown**, [arXiv:2002.11738](https://arxiv.org/abs/2002.11738). This project supplies a Python walkthrough and an inspectable implementation.
 
 Useful extensions are to verify the original lookup tables and C++ provenance, compare backends on a fixed error corpus, add correlated spanning-noise experiments, and report finite-size uncertainty before making performance claims. Contributions should include a reproducible error pattern, parameters, and the expected invariant or behavior.
