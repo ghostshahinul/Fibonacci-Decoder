@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fibonacci-fractal-decoder"
+version = "0.1.0"
+description = "An educational matching-based decoder for the classical Fibonacci fractal code"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "Md. Shahinul Islam"}]
+dependencies = ["networkx>=3.2,<4"]
+
+[project.optional-dependencies]
+notebook = ["numpy>=1.26,<3", "matplotlib>=3.8,<4", "ipywidgets>=8.1,<9", "jupyterlab>=4,<5", "nbformat>=5.10,<6", "nbclient>=0.10,<1", "ipykernel>=6,<8"]
+
+[project.urls]
+Repository = "https://github.com/ghostshahinul/Fibonacci-Decoder"
+Issues = "https://github.com/ghostshahinul/Fibonacci-Decoder/issues"
+
+[project.scripts]
+fibonacci-demo = "demo:main"
+
+[tool.setuptools]
+py-modules = ["fibonacci_decoder", "demo"]
