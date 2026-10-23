@@ -112,7 +112,7 @@ The consensus candidate flips a bit when both directional votes agree. A cleared
 | `distance` (default) | `d(i,j)` | Shortest-path baseline |
 | `degeneracy` | `round(1000 * (-log(N(i,j)) - d(i,j)*log(p/(1-p))))` | Experimental geodesic-count reconstruction |
 
-The initial notebook described a C++ port referencing `Decoder.cpp`, `BasicFunctions.cpp`, `TestCode`, and embedded `ImportN.cpp` / `ImportD.cpp` tables. Those sources and tables are **not included in this repository**, and byte-for-byte or statistical equivalence has not been established. In particular, the interpretation of `N` as the number of shortest graph paths is a reconstruction. Both modes require `0 < p < 1`; the decoder itself can accept endpoint probabilities when given prebuilt weights.
+Here `d(i,j)` is the shortest graph distance and `N(i,j)` counts shortest graph paths. The degeneracy model has not been validated against the reference C++ lookup tables or published failure-rate curves. Both modes require `0 < p < 1`; the decoder itself can accept endpoint probabilities when given prebuilt weights.
 
 The graph preprocessing uses pairwise adjacency construction and BFS from each symmetry vertex. Each correction round then performs `L * H` matchings. This transparent Python implementation favors inspection over large-lattice performance. Without NetworkX, the exact fallback accepts at most 20 defects per matching and has exponential memory/time cost. Seeds control sampled errors, but equal-cost matching choices can vary across backends or versions.
 
@@ -122,7 +122,7 @@ The graph preprocessing uses pairwise adjacency construction and BFS from each s
 python -m unittest discover -s tests -v
 ```
 
-Tests check torus geometry, single-error syndromes, even symmetry parity under all translations, all 32 single-bit recoveries at `L=8`, zero-syndrome behavior, residual-syndrome consistency, both weight modes, matching costs, invalid inputs, reproducible sampling, and consistency between notebook and module definitions. CI also validates the notebook schema and executes every cell in a fresh kernel on Python 3.10 and 3.12. See [validation notes](docs/VALIDATION.md) for the difference between configured CI and checks already performed.
+Tests check torus geometry, single-error syndromes, even symmetry parity under all translations, all 32 single-bit recoveries at `L=8`, zero-syndrome behavior, residual-syndrome consistency, both weight modes, matching costs, invalid inputs, reproducible sampling, and consistency between notebook and module definitions. CI also validates the notebook schema and executes every cell in a fresh kernel on Python 3.10 and 3.12. See [validation notes](docs/VALIDATION.md) for the test coverage, recorded results, and reproducibility limits.
 
 ## Repository guide
 
@@ -133,7 +133,7 @@ Tests check torus geometry, single-error syndromes, even symmetry parity under a
 | `demo.py` | Fixed-error and Monte Carlo command-line examples |
 | `tests/test_decoder.py` | Behavioral invariants and regression tests |
 | `tools/render_example.py` | Reproducible SVG example generator |
-| `docs/VALIDATION.md` | Evidence, notebook repair, and known limits |
+| `docs/VALIDATION.md` | Test coverage, recorded results, and known limits |
 | `.github/workflows/ci.yml` | Automated tests, schema validation, and notebook execution |
 
 ## Attribution and next steps
@@ -142,4 +142,4 @@ Tests check torus geometry, single-error syndromes, even symmetry parity under a
 
 The underlying Fibonacci-code decoding framework is due to **Georgia M. Nixon and Benjamin J. Brown**, [arXiv:2002.11738](https://arxiv.org/abs/2002.11738). This project supplies a Python walkthrough and an inspectable implementation.
 
-Useful extensions are to verify the original lookup tables and C++ provenance, compare backends on a fixed error corpus, add correlated spanning-noise experiments, and report finite-size uncertainty before making performance claims. Contributions should include a reproducible error pattern, parameters, and the expected invariant or behavior.
+Planned extensions include comparison against the reference C++ lookup tables, backend comparisons on a fixed error corpus, correlated spanning-noise experiments, and finite-size uncertainty estimates. Contributions should include a reproducible error pattern, parameters, and the expected invariant or behavior.
