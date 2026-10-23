@@ -1,29 +1,50 @@
 # Validation and limitations
 
-## Notebook repair
+## Run the checks
 
-The original file is parseable JSON. Its saved `metadata.widgets` entry contains widget model IDs directly under `application/vnd.jupyter.widget-state+json`, rather than a widget-state document with `state`, `version_major`, and `version_minor`. This malformed saved widget state is the identified rendering defect. The repair removes saved widget metadata, widget output references, stale outputs, execution counts, and Colab session metadata while retaining code and explanatory content. Widgets are created afresh when executed.
+Install the project and notebook dependencies, then run the regression suite:
 
-## Decoder changes
+```bash
+python -m pip install -e ".[notebook]"
+python -m unittest discover -s tests -v
+python demo.py
+```
 
-* Return immediately for an initially empty syndrome: zero errors are recovered in zero rounds, while a nonzero zero-syndrome codeword is classified as incorrect recovery.
-* Give a cleared syndrome priority in the stopping condition.
-* Check geometry, all columns of periodic CA closure, binary seed rows, probability ranges, weight-mode spelling, error indices, and sampling counts.
-* Raise an explicit error on odd matching input and bound the exponential DP fallback.
-* Accept an isolated random-number generator for reproducible sampling.
-* Use distance weights as the documented baseline; preserve degeneracy weighting as an experimental option.
+The [CI workflow](../.github/workflows/ci.yml) runs these checks on Python 3.10 and 3.12. It also validates the notebook schema with nbformat and executes every cell in a fresh Python kernel. Executed notebooks are uploaded as workflow artifacts.
 
-## Checks performed locally
+## Test coverage
 
-On Python 3.12 using the standard-library exact DP matching backend:
+The 11 unittest methods cover:
 
-* 11 unittest methods pass, including all 32 single-bit errors at `L=8`, parity checks for every single error under all 32 symmetry translations, and residual-syndrome consistency for fixed and seeded errors.
-* The fixed eight-bit example recovers exactly under both weight modes. With distance weighting its defect counts are `20, 14, 10, 4, 0`.
-* `python demo.py --samples 100 --seed 0` at `L=8`, `p=0.08`, distance weights gives 92 exact recoveries, 1 incorrect cleared result, and 7 give-ups. This is a small reproducibility example, not a benchmark or threshold estimate.
-* JSON structure, unique notebook cell IDs, cleared outputs, and agreement between notebook core definitions and the module are tested.
+* Periodic lattice geometry and single-bit syndrome extraction.
+* Even defect parity for every single-bit error under all 32 symmetry translations at `L=8`.
+* Exact recovery of all 32 single-bit errors and the fixed eight-bit example.
+* Zero-round handling of an empty syndrome, including rejection of nonzero residual codewords as exact recoveries.
+* Consistency between recorded residual syndromes and the error XOR prediction.
+* Shortest-path multiplicities and minimum-weight matching with negative edge weights.
+* Both weight models, explicit DP fallback coverage, input validation, and seeded sampling.
+* Notebook structure, cleared saved outputs, and agreement between notebook and module definitions.
 
-The local environment has no scientific Python/Jupyter packages, and network restrictions prevent dependency installation. Full dependency validation was completed remotely: [GitHub Actions run 39813604923](https://github.com/ghostshahinul/Fibonacci-Decoder/actions/runs/39813604923) passed on Python 3.10 and 3.12 for implementation commit `e43b48c04ca44d878f515624fc3a9411adcc0600`. Both jobs installed the package and notebook dependencies, passed all 11 tests using NetworkX (with explicit DP fallback coverage), validated the notebook with nbformat, and executed every cell in a fresh kernel, including plotting and widget creation. Executed notebooks are attached to that run as artifacts. The SVG example is generated without plotting dependencies from recorded DP-backend snapshots.
+## Recorded results
 
-## Remaining scientific limits
+[GitHub Actions run 39813604923](https://github.com/ghostshahinul/Fibonacci-Decoder/actions/runs/39813604923) passed on Python 3.10 and 3.12 for implementation commit `e43b48c04ca44d878f515624fc3a9411adcc0600`. Both jobs passed package installation, all 11 tests with NetworkX available, notebook schema validation, and execution of every notebook cell, including plotting and widget creation.
 
-The code is a classical parity-check decoder. Its connection to quantum error correction is conceptual and algorithmic; it does not implement a quantum stabilizer code. Neither published threshold reproduction nor equivalence to the original C++ tables is established. The notebook's original C++ origin remains to be verified, and no speculative upstream URL or license has been supplied. Matching ties can alter trajectories across backends. Experiments currently use independent bit flips, not the paper's full correlated-noise study.
+The following reference results use Python 3.12 and the exact DP matching backend:
+
+| Experiment | Parameters | Result |
+|---|---|---|
+| Fixed error | `L=8`, `p=0.08`, distance weights; bits `[3,7,12,14,16,20,27,29]` | Exact recovery in four rounds; defect counts `20,14,10,4,0` |
+| Fixed error | Same error and geometry, degeneracy weights | Exact recovery |
+| Independent bit flips | `L=8`, `p=0.08`, distance weights, 100 samples, seed 0 | 92 exact recoveries, 1 incorrect cleared result, 7 give-ups |
+
+These are small reproducibility examples, not threshold estimates. The command-line demo uses NetworkX when installed; its results can differ from the DP reference when equal-cost matchings are resolved differently. The [SVG generator](../tools/render_example.py) explicitly selects DP to reproduce the illustrated trajectory.
+
+## Notebook portability
+
+The committed notebook excludes saved widget state, output references, execution counts, and session-specific metadata. Widgets and plots are generated when the notebook runs. This keeps the file suitable for static GitHub rendering and avoids stale widget references. Use Jupyter for the interactive slider.
+
+## Scientific and reproducibility limits
+
+This implementation decodes a classical parity-check code. Published threshold reproduction and equivalence to the reference C++ lookup tables have not been established. In the experimental degeneracy model, `N` counts shortest graph paths; agreement with the reference tables remains to be checked.
+
+Current experiments use independent bit flips rather than the paper's full correlated spanning-noise study. Matching ties can alter trajectories across backends and dependency versions. A cleared syndrome is counted as success only when the predicted error equals the injected error exactly.
